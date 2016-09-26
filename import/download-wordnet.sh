@@ -1,3 +1,3 @@
 cd import
-wget http://pannous.net/files/wordnet.zip
-unzip wordnet.zip
+wget -N http://pannous.net/files/wordnet.zip
+yes|unzip wordnet.zip

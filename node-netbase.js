@@ -107,6 +107,7 @@ c=netbase.query("a.b")
 netbase.show(c)
 
 function importAndDownload(type,file){
+  if(!type)type='all'
     if(file)netbase.import(type,file)
     if(!file){
       system( __dirname+"/import/download-"+type+".sh")
