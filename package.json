@@ -23,10 +23,14 @@
     "Database",
     "DB"
   ],
-  "author": "Pannous",
+  "author": "Pannous <info@pannous.com> (http://pannous.com)",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/pannous/node-netbase/issues"
   },
-  "homepage": "https://github.com/pannous/node-netbase#readme"
+  "homepage": "https://github.com/pannous/node-netbase#readme",
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "mocha": "^3.0.2"
+  }
 }
