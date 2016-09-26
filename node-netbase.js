@@ -42,7 +42,7 @@ var Statement0=struct({
   })
 Statement=ref.refType(Statement0)
 
-netbase = ffi.Library('lib/netbase', {
+netbase = ffi.Library(__dirname+'/lib/netbase', {
   ceil: [ DOUBLE, [ DOUBLE ]/*,abi|async|varargs*/ ],
   printf:[VOID,[STRING]] ,
   allowWipe:[VOID,[]],
