@@ -109,7 +109,7 @@ netbase.show(c)
 function importAndDownload(type,file){
     if(file)netbase.import(type,file)
     if(!file){
-      system("import/download-"+type+".sh")
+      system( __dirname+"import/download-"+type+".sh")
       netbase.import(type)
     }
 }
