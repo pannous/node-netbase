@@ -1,7 +1,10 @@
+var child_process=require('child_process') 
+var system=child_process.execSync
 var ffi = require('ffi');
 var struct = require('ref-struct');
 var ref = require('ref')
 var ArrayType = require('ref-array') // ArrayType(int)=int[] vs char**=ref.refType(charPtr);
+// var wget = require('node-wget');
 // var addons = require('addons'); // for C++ structures, not needed here
 VOID='void'
 BOOL='bool'
@@ -102,9 +105,17 @@ if(!netbase.hasNode('bug'))
 	netbase.import(netbase.importTypes.wordnet)
 c=netbase.query("a.b")
 netbase.show(c)
+
+function importAndDownload(type,file)=>{
+    if(file)netbase.import(type,file)
+    if(!file){
+      system("import/download-"+type+".sh")
+      netbase.import(type)
+    }
+
 // netbase.server()
 // if (fun_object.isNull()) 
 module.exports = {
   query:netbase.query,
-  import:netbase.import
+  import:importAndDownload,
 }
