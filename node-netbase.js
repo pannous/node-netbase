@@ -106,13 +106,13 @@ if(!netbase.hasNode('bug'))
 c=netbase.query("a.b")
 netbase.show(c)
 
-function importAndDownload(type,file)=>{
+function importAndDownload(type,file){
     if(file)netbase.import(type,file)
     if(!file){
       system("import/download-"+type+".sh")
       netbase.import(type)
     }
-
+}
 // netbase.server()
 // if (fun_object.isNull()) 
 module.exports = {
