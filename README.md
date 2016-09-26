@@ -3,10 +3,10 @@ node.js module for netbase: a semantic Graph Database with wordnet, wikidata, fr
 
 
 ## Installation
-stable:
-npm install netbase
-install dev:
-npm install git://github.com/pannous/node-node
+stable release:
+`npm install netbase`
+install development head:
+`npm install git://github.com/pannous/node-netbase`
 
 ## Usage
 ```

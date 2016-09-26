@@ -105,5 +105,6 @@ netbase.show(c)
 // netbase.server()
 // if (fun_object.isNull()) 
 module.exports = {
-  query:netbase.query
+  query:netbase.query,
+  import:netbase.import
 }
