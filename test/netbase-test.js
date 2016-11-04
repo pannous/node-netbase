@@ -4,9 +4,7 @@ show = netbase.show,
 query = netbase.query;
 
 netbase.import('wordnet')
-// result=netbase.query('opposite of bad')
 result=netbase.query('bug')
-// netbase.test() // native !
 netbase.testAll() // native !
 // show(result)
 // require('netbase')
