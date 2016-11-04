@@ -1,5 +1,5 @@
 # [node-netbase](https://github.com/pannous/node-netbase)
-node.js module for [netbase](https://github.com/pannous/netbase): a semantic Graph Database with wordnet, wikidata, freebase, csv, xml, ... importer
+node.js module for [netbase](https://github.com/pannous/netbase): a semantic Graph Database with wordnet, wikidata, freebase, csv, xml, ... import and export facilities.
 
 
 ## Installation
@@ -22,4 +22,3 @@ install development head:
     result=netbase.query('opposite of bad')
     show(result)
 ```
-
