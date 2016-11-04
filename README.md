@@ -22,3 +22,4 @@ install development head:
     result=netbase.query('opposite of bad')
     show(result)
 ```
+
