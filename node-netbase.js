@@ -3,7 +3,8 @@ var system=child_process.execSync
 var ffi = require('ffi');
 var struct = require('ref-struct');
 var ref = require('ref')
-var ArrayType = require('ref-array') // ArrayType(int)=int[] vs char**=ref.refType(charPtr);  var a = new ffi.Array('int', 10)
+var ArrayType = require('ref-array') 
+// ArrayType(int)=int[] vs char**=ref.refType(charPtr);  var a = new ffi.Array('int', 10)
 // var wget = require('node-wget');
 // var addons = require('addons'); // for C++ structures, not needed here
 
