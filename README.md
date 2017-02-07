@@ -23,4 +23,4 @@ install development head:
     netbase.import('wordnet')
     result=netbase.query('opposite of bad')
     show(result)
-```
+```# netbase-nodejs
