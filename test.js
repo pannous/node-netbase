@@ -1,6 +1,11 @@
 #!/usr/bin/env node
-// netbase=require('./node-netbase.js')
 netbase=require('netbase')
+
+
+netbase.setGerman()
+merkel=netbase.get("Angela Merkel")
+assert(merkel.Vorname="Angela")
+
 console.log(netbase)
 
 netbase.setEnglish()
@@ -8,10 +13,7 @@ n=netbase.get(1)
 console.log(n.name)
 assert(n.name=="Universe")
 
-netbase.setGerman()
 
-merkel=netbase.get("Angela Merkel")
-assert(merkel.Vorname="Angela")
 
 
 // n.prototype.toString = function(){return "[object Foo]";}

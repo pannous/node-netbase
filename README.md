@@ -15,12 +15,16 @@ install development head:
 `sudo npm install -g git://github.com/pannous/node-netbase`
 
 ## Usage
-```
+```javascript
     netbase = require('netbase'),
+
+    merkel=netbase.get("Angela Merkel")
+		assert(merkel.Vorname="Angela")
+
     show = netbase.show,
     query = netbase.query;
     
     netbase.import('wordnet')
     result=netbase.query('opposite of bad')
     show(result)
-```# netbase-nodejs
+```

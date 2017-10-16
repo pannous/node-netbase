@@ -12,8 +12,8 @@ try{
 wget=url=>require('sync-request')('GET',url)
 
 let cache = {}
-setEnglish=()=>{cache={};console.log("XDFDF");api = "http://netbase.pannous.com/json/all/"}
-setGerman=()=> {cache={};api = "http://de.netbase.pannous.com:81/json/all/"}
+setEnglish=()=>{cache={};lang="en";api = "http://netbase.pannous.com/json/all/"}
+setGerman=()=> {cache={};lang="de";api = "http://de.netbase.pannous.com:81/json/all/"}
 
 if(process.env.NETBASE_LANGUAGE=="en") setEnglish()
 if(process.env.NETBASE_LANGUAGE=="de") setGerman()
@@ -131,7 +131,7 @@ class Node {
     // let result=fetch(endpoint).then(response=>response.json().then(parse))
     console.log(endpoint);
     var result;
-    let file = (this._name || this.id) + ".j5"
+    let file = (this._name || this.id) + `.${lang}.j5`
     try {
       result = read_json5(file)
     } catch (x) {
