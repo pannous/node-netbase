@@ -16,15 +16,16 @@ install development head:
 
 ## Usage
 ```javascript
-    netbase = require('netbase'),
+netbase = require('netbase'),
 
-    merkel=netbase.get("Angela Merkel")
-		assert(merkel.Vorname="Angela")
+netbase.setGerman()
+merkel=netbase.get("Angela Merkel")
+assert(merkel.Vorname="Angela")
 
-    show = netbase.show,
-    query = netbase.query;
-    
-    netbase.import('wordnet')
-    result=netbase.query('opposite of bad')
-    show(result)
+show = netbase.show,
+query = netbase.query;
+
+netbase.import('wordnet')
+result=netbase.query('opposite of bad')
+show(result)
 ```

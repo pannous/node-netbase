@@ -19,7 +19,7 @@ if(process.env.NETBASE_LANGUAGE=="en") setEnglish()
 if(process.env.NETBASE_LANGUAGE=="de") setGerman()
 else setEnglish()
 
-api_limit = " limit 100"
+api_limit = " limit 1000"
 World = new Proxy({}, { get: (_, object) => getThe(object) });
 class Netbase {
   get(id){return proxy(id)}
@@ -59,17 +59,17 @@ function getProperties(node, property) {
   // console.log(node);
   // console.log(node.edges);
   for (edge of node.statements) {
-    if (edge.predicate.lower == property) {
+    if (edge.predicate.toLowerCase() == property) {
       // console.log(edge);
       properties.add(edge.oid == node.id ? edge.subject : edge.object)
     }
-    if (edge.predicate.lower == property + " of") {
+    if (edge.predicate.toLowerCase() == property + " of") {
       // console.log(edge);
       properties.add(edge.oid == node.id ? edge.subject : edge.object) // of->inverse!
     }
   }
   for (edge of node.statements) {
-    if (edge.predicate.lower.contains(property)) {
+    if (edge.predicate.toLowerCase().contains(property)) {
       // console.log(edge);
       properties.add( edge.oid == node.id ? edge.subject : edge.object)
     }
@@ -83,26 +83,27 @@ function getProperty(node, property) {
   console.log('getProperty ' + node._name + ":" + property);
   // console.log(node);
   // console.log(node.edges);
-  property = property.replace("_", " ").lower
+  property = property.replace("_", " ").toLowerCase()
   // console.log(node);
   for (edge of node.statements) {
-    if (edge.predicate.lower == property) {
-      // console.log(edge);
+    let predicate=edge.predicate.toLowerCase()
+    if (predicate == property) {
+      console.log(edge);
       return edge.oid == node.id ? edge.subject : edge.object
     }
-    if (edge.predicate.lower == property + " of") {
-      // console.log(edge);
+    if (predicate == property + " of") {
+      console.log(edge);
       return edge.oid == node.id ? edge.subject : edge.object
       // return edge.oid == node.id ? edge.object : edge.subject // of->inverse!
     }
   }
   for (edge of node.statements) {  
-    if (edge.predicate.lower.contains(property)) {
-      // console.log(edge);
+    if (edge.predicate.toLowerCase().contains(property)) {
+      console.log(edge);
       return edge.oid == node.id ? edge.subject : edge.object
     }
   }
-  if (property.lower.endsWith("s"))return getProperties(node,property)
+  if (property.endsWith("s"))return getProperties(node,property)
 }
 
 
@@ -113,7 +114,7 @@ function proxify(object = {}) {
     get: (_, property) => {
       proto = Object.getPrototypeOf(object)
       if (typeof property == 'symbol' || property[0] == "_" || property in no_proxy) return object[property]
-      return object[property] || proto[property] || getProperty(object, property) || "missing :" + property
+      return object[property] || proto[property] || getProperty(object, property) || "missing:" + property
     }
   });
 }

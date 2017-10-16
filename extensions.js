@@ -992,6 +992,7 @@ function readCallerLine(){
   var err;
   try { throw Error('') } catch(err0) { err=err0 }
   var caller_line = err.stack.split("\n")[3];
+  if(caller_line.match(/repl/))return ""
   var index =  caller_line.indexOf("(")|| caller_line.indexOf("at ");
   var to= caller_line.indexOf(")") ||  caller_line.length
   var clean = caller_line.slice(index+1,to);
@@ -1009,12 +1010,21 @@ function getCallerLine(){
   return clean
 }
 
-assert = function assert(condition, message) {
+assert_equals=function assert_equals(left,right) {
+  if(left!=right){
+    message = `Assertion failed: ${readCallerLine()}   ${left}!=${right}`
+    throw (typeof Error !== "undefined") ? new Error(message) : message;
+  } 
+  else return true
+}
+
+assert=function assert(condition, message) {
   // err.stack
   if (!condition){
     message = "Assertion failed "+(message || readCallerLine());
     throw (typeof Error !== "undefined") ? new Error(message) : message;
-  }
+  } 
+  else return true
   // else if (message) console.log("assertion ok: "+message)
 }
 

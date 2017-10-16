@@ -1,10 +1,13 @@
 #!/usr/bin/env node
-netbase=require('netbase')
+// netbase=require('netbase')
+netbase=require('./node-netbase.js')
 
 
 netbase.setGerman()
 merkel=netbase.get("Angela Merkel")
 assert(merkel.Vorname="Angela")
+brd=netbase.get("Deutschland")
+assert_equals(brd.Hauptstadt,"Berlin")
 
 console.log(netbase)
 
