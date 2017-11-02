@@ -1,9 +1,10 @@
 {
     "name": "netbase",
-    "version": "1.0.7",
+    "version": "1.0.12",
     "description": "semantic Graph Database with wordnet, wikidata, freebase, csv, xml, ... importer",
     "main": "node-netbase.js",
     "scripts": {
+        "start": "node --harmony --harmony-arrow-functions",
         "test": "echo \"Error: no test specified\" && exit 1"
     },
     "repository": {
@@ -24,11 +25,18 @@
         "DB"
     ],
     "author": "Pannous <info@pannous.com> (http://pannous.com)",
-    "license": "modified GPL, see file",
+    "license": "modified GPL, see LICENSE file",
     "bugs": {
         "url": "https://github.com/pannous/node-netbase/issues"
     },
     "homepage": "https://github.com/pannous/node-netbase#readme",
+    "dependencies": {
+        "json5": "",
+        "sync-request": "",
+        "node-fetch":"",
+        "request":"",
+        "fs-readfile-promise":""
+    },
     "devDependencies": {
         "ffi": ">=2.2.0",
         "ref": ">=1.3.3",
@@ -36,6 +44,6 @@
         "ref-array": ">=1.2.0",
         "segfault-handler": ">=1.0.0",
         "object.observe": ">=0.2.6",
-        "fuck_json_comments": "isn't an ES7 proposal anymore and will be removed from V8"
+        "/*fuck_json_comments*/": "//isn't an ES7 proposal anymore and will be removed from V8"
     }
 }

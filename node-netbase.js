@@ -1,9 +1,13 @@
-#!/usr/bin/env node
+#!/usr/bin/node 
+// --harmony --harmony-arrow-functions
 require('./extensions.js')()
 try{
-  require('./netbase-ffi.js')
-  console.log("using native netbase-ffi.js")
-  return 
+  if(process.env.NETBASE_LOCAL){
+    require('./netbase-ffi.js')
+    console.log("using native netbase-ffi.js")
+    return 
+  }
+  else console.log("Using online netbase connector. Set NETBASE_LOCAL env for local native server. ")
 }catch(ex){
   console.log("Using online netbase fallback. Reason:")
   console.log(ex.message)
@@ -12,20 +16,27 @@ try{
 wget=url=>require('sync-request')('GET',url)
 
 let cache = {}
-setEnglish=()=>{cache={};lang="en";api = "http://netbase.pannous.com/json/all/"}
-setGerman=()=> {cache={};lang="de";api = "http://de.netbase.pannous.com:81/json/all/"}
+let cache_folder=".cache"
+// let cache_folder="/tmp/netbase"
+mkdir(cache_folder)
+var setDebug=()=>{cache={};lang="deb";api = "http://localhost:8080/json/all/"}
+var setEnglish=()=>{cache={};lang="en";api = "http://netbase.pannous.com/json/all/"}
+var setGerman=()=> {cache={};lang="de";api = "http://de.netbase.pannous.com:81/json/all/"}
+var setTest=()=>{ cache={};lang="test";api="http://mimir-dev02.goldcon.de:8181/json/all/"}
+
 
 if(process.env.NETBASE_LANGUAGE=="en") setEnglish()
 if(process.env.NETBASE_LANGUAGE=="de") setGerman()
 else setEnglish()
 
-api_limit = " limit 1000"
+api_limit = " limit 10000"
 World = new Proxy({}, { get: (_, object) => getThe(object) });
 class Netbase {
   get(id){return proxy(id)}
 }
 class Edges {
   constructor(node) {
+    if(!node)return 
     this.edges = node.statements
     this.object = node
   }
@@ -33,16 +44,10 @@ class Edges {
   get last() { return this.edges[this.count - 1] }
   get size() { return this.edges.length }
   get count() { return this.edges.length }
-  toString() { return "dsaffa" }
-  get toString() { return "dsaffa" }
+  // toString() { return "dsaffa" }
+  // get toString() { return "dsaffa" }
 
 }
-parse = (result) => {
-  // console.log(result)
-  // console.log(result.results[0].name)
-  return result.results[0]
-}
-
 getThe = function (name) {
   // if (name == Symbol("util.inspect.custom"))return World //  name ="World"
   if (typeof name == 'symbol')return World
@@ -85,6 +90,7 @@ function getProperty(node, property) {
   // console.log(node.edges);
   property = property.replace("_", " ").toLowerCase()
   // console.log(node);
+  if(!node.statements)node.load()
   for (edge of node.statements) {
     let predicate=edge.predicate.toLowerCase()
     if (predicate == property) {
@@ -118,9 +124,36 @@ function proxify(object = {}) {
     }
   });
 }
+
+
+function loadJson(id){
+  let file = cache_folder + "/" + lang + "." +id + ".j5"
+  let endpoint = api+id // this.id ? api + this.id : api + String(this._name) + api_limit
+  endpoint=endpoint.replace('/all/','/the/')
+  console.log(endpoint)
+  // let parse = (result) => {return result.results[0] }
+  // let result=fetch(endpoint).then(response=>response.json().then(parse))
+  try {
+    results = JSON.parse(read(file))
+  } catch (x) {
+    try{
+        if (exists(file)) console.log(x);
+        let json=wget(endpoint).body //string(
+        save_json5(file,json)
+        results = JSON5.parse(json)
+    }catch(ex){console.error("can't cache "+file+" : "+ex.message);save_json5(file,json)}
+  }
+  if(results.results) return results.results[0]
+  // console.log(results.keys)
+  // console.log(dir(results))
+  console.log(results[0])
+  throw "NO results"
+}
+
 class Node {
   constructor(id, name = 0) {
     this.id = id
+    this.statementCount=-1
     if (name) this.name = name
   }
   load() {
@@ -128,23 +161,8 @@ class Node {
       console.log("already loaded");
       return this;
     }
-    let endpoint = this.id ? api + this.id : api + String(this._name) + api_limit
-    // let result=fetch(endpoint).then(response=>response.json().then(parse))
-    console.log(endpoint);
-    var result;
-    let file = (this._name || this.id) + `.${lang}.j5`
-    try {
-      result = read_json5(file)
-    } catch (x) {
-      if (exists(file)) console.log(x);
-      console.log(wget(endpoint))
-      let json=string(wget(endpoint).body)
-      console.log(json)
-      result = parse(JSON.parse(json))
-      try{
-        save_json5(file,result)
-      }catch(ex){console.log("can't cache "+file)}
-    }
+    var result=loadJson(this._name||this.id)
+    if(!result)return this
     Object.defineProperty(this, "_edges", { enumerable: false, value: new Edges(result) });
     Object.defineProperty(this, "statements", { enumerable: false, value: result.statements });
     delete result.statements // ^^
@@ -153,10 +171,9 @@ class Node {
     // this.topic = result.topic || result.class
     this.class = result.class || result.topic
     proxy = proxify(this)
-  // node.kind=result.kind
-  // node.image=result.image
-  // node.statementCount=result.statementCount
-    // delete result.kind
+    proxy.kind=result.kind
+    proxy.image=result.image
+    proxy.statementCount=result.statementCount
     // Object.assign(this,result)
     if (!this.id) this.id = result.id
     this._name = result.name
@@ -196,6 +213,8 @@ function proxy(id) {
   return proxy
 }
 
+module.exports = exports = {getThe:getThe, get:getThe,setGerman:setGerman,setEnglish:setEnglish,setDebug:setDebug,has:loadJson}
 
-
-module.exports = exports = {getThe:getThe, get:getThe,setGerman:setGerman,setEnglish:setEnglish}
+console.log("DEBUGGG!!!")
+setGerman()
+brd=getThe("Deutschland").load()

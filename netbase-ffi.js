@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 var child_process=require('child_process') 
 var system=child_process.execSync
 var ffi = require('ffi');
@@ -111,12 +112,6 @@ Object.assign(Node.prototype, {
   is(typ){return netbase.isA(this.ref(),get(typ).ref())},
   has(typ){z=netbase.has(this.ref(),get(typ).ref());return z.address()==0?false:x},
 })
-require('object.observe')
-
-Object.observe(Node, ( changes ) => {
-  console.log( "property "+change.name+" of " + change.object +" was "+change.type+ " to "+ change.object[change.name] );
-  if(change.name=="name") netbase.setName(change.object.id,change.object.name);// copy local string
-}) // multiple observers:
 
 netbase.query=(x)=>{
   len=ref.alloc(int);
@@ -154,10 +149,11 @@ process.chdir(old)
 // *********************************************************************
 
 // netbase.execute("help")
-netbase.learn("a.b=c")
-b=netbase.get('hi')
+// netbase.learn("a.b=c")
+// b=netbase.get('hi')
 
-// b=netbase.get(5)
+b=netbase.get(1)
+console.log(b.name)
 // netbase.show(b)
 // c=netbase.query("bug")
 // netbase.show(c)

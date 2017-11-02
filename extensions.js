@@ -1,7 +1,7 @@
 /*
+require('/me/dev/js/extensions.js')()
 ln /me/dev/script/javascript/extensions.js 
 require('./extensions.js')()
-require('/Users/me/dev/script/javascript/extensions.js')()
 // loadScript("http://pannous.net/extensions.js");
 
 */
@@ -352,6 +352,7 @@ Array_Extensions = {
   merge(xs) {
     trace('merge is selfmodifying (unlike concat)');
     for (x of xs) this.push(x)
+    return this
   }, // [1]+[2] '12' WTF!!!
   // DONT USE join!! danger ~ like python!! [1,2,3].join('0') == 10203 !!!
 
@@ -375,6 +376,9 @@ Array_Extensions = {
     return this.filter((item, pos) => this.indexOf(item) == pos)
   },
   dedupe() {
+    return this.filter((item, pos) => this.indexOf(item) == pos)
+  },
+  dedup() {
     return this.filter((item, pos) => this.indexOf(item) == pos)
   },
   unique() {
@@ -482,8 +486,8 @@ String_Extensions = { // StringExtensions
   toLower() {
     return this.toLowerCase()
   },
-  // upper(){return this.toUpperCase()},
-  // lower(){return this.toLowerCase()},
+  upper(){return this.toUpperCase()},
+  lower(){return this.toLowerCase()},
   uppercase() {
     echo("toUpperCase!");
     return this.toUpperCase()
@@ -730,7 +734,7 @@ try {
   }
   rb = read_buffer = read_binary = load_binary = open_rb = path => fs.readFileSync(my(path))
   read_csv = load_csv = (x,sep=',') => read_lines(x).map(x => x.split(sep))
-  read_tsv = load_csv = x => read_lines(x).map(x => x.split("\t"))
+  read_tsv = x => read_lines(x).map(x => x.split("\t"))
 
 } catch (ex) {
   console.log(ex); // ex
@@ -743,10 +747,7 @@ try {
 }
 
 range=function* (start = 0, end, step = 1) {
-  if (!end) {
-    end = start;
-    start = 0;
-  }
+  if (!end) {end = start; start = 0; }
   if (end < start) step = -Math.abs(step)
   for (let i = start; i < end; i += step) yield i;
 }
@@ -786,12 +787,15 @@ if(typeof(fetch)=='undefined'){
   }catch(ex){console.log("npm install fs-readfile-promise  for readFileAsync")}
   // wget = require('deasync')(require('node-fetch'))
 }
+try{
+wget = url => string(require('sync-request')('GET',url).body)
+}catch(ex){console.log(ex)}
 // console.log(wget("http://mimi.com"));
 // await fetch("http://mimi.com");
 
 urlify = url => url.startsWith('http') ? url : "http://" + url
 
-download = wget = async(url) => {
+download = async(url) => {
   response = await fetch(url)
   data = await response.text()
   return data
@@ -809,7 +813,7 @@ downloadSync2 = wget2 = (url) => {
 }
 
 
-browse = (url = "") => exec(`firefox ${url}`)
+browse = (url = "") => exec(`firefox -new-tab -url "${url}"`)
 
 
 // fetch=(url)=>{
@@ -863,6 +867,13 @@ to_buffer = bytes => {
 is_string = (s) => s && s.constructor == String
 
 
+is_int = parseInt
+
+globalize = clazz => {
+  for (k of keys(clazz)) global[k] = clazz[k]
+}
+is_empty= object=>!Object.keys(object).length||len(object)==0
+
 
 // wast2wasm simple.wat -o simple.wasm
 // wast2wasm simple.wat -v // show assembly
@@ -873,13 +884,6 @@ wat = `(module
     call $i
   )
 )`
-
-is_int = parseInt
-
-globalize = clazz => {
-  for (k of keys(clazz)) global[k] = clazz[k]
-}
-is_empty= object=>!Object.keys(object).length||len(object)==0
 
 wasm = async(_wasm, imports = {}) => {
   var memory = new WebAssembly.Memory({initial:16384, maximum:65536}); //  Property value 100000000 is above the upper bound wtf 
@@ -1146,3 +1150,4 @@ function beep() {
 // }
 
 js=JSON.stringify
+mkdir=path=>{try{fs.mkdirSync(path,1) }catch(ex){}}
