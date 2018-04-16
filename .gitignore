@@ -1,3 +1,5 @@
 node_modules
 npm-debug.log
 page.link.sh
+.cache/*.j5
+*.j5

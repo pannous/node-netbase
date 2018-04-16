@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 // netbase=require('netbase')
 netbase=require('./node-netbase.js')
+// netbase.setGerman()
+netbase.setTest()
 
-
-netbase.setGerman()
 merkel=netbase.get("Angela Merkel")
 assert(merkel.Vorname="Angela")
 brd=netbase.getThe("Deutschland").load()

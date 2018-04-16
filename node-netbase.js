@@ -16,14 +16,15 @@ try{
 wget=url=>require('sync-request')('GET',url)
 
 let cache = {}
-let cache_folder=".cache"
+let cache_folder=home("~/.cache/netbase")
 // let cache_folder="/tmp/netbase"
 mkdir(cache_folder)
+let api="http://localhost:8080/json/short/"
 var setDebug=()=>{cache={};lang="deb";api = "http://localhost:8080/json/all/"}
 var setEnglish=()=>{cache={};lang="en";api = "http://netbase.pannous.com/json/all/"}
 var setGerman=()=> {cache={};lang="de";api = "http://de.netbase.pannous.com:81/json/all/"}
-var setTest=()=>{ cache={};lang="test";api="http://mimir-dev02.goldcon.de:8181/json/all/"}
-
+var setTest=()=>{cache={};log_level =log_levels.TRACE;lang="test";api="http://localhost:8080/json/all/"}
+// var setTest=()=>{cache={};lang="test";api="http://mimir-dev02.goldcon.de:8181/json/all/"}
 
 if(process.env.NETBASE_LANGUAGE=="en") setEnglish()
 if(process.env.NETBASE_LANGUAGE=="de") setGerman()
@@ -51,7 +52,7 @@ class Edges {
 getThe = function (name) {
   // if (name == Symbol("util.inspect.custom"))return World //  name ="World"
   if (typeof name == 'symbol')return World
-  // console.log(name);
+	trace(name);
   if (name in cache) return cache[name]
   return proxify(new Node(0, name).load())
   // return fetch(api+name).then(response=>response.json().then(parse).then(create))
@@ -59,23 +60,23 @@ getThe = function (name) {
 
 function getProperties(node, property) {
   property = property.sub(0,-1)
-  console.log('getProperties ' + node._name + ":" + property);
+  trace('getProperties ' + node._name + ":" + property);
   properties=[]
-  // console.log(node);
-  // console.log(node.edges);
+  trace(node);
+  trace(node.edges);
   for (edge of node.statements) {
     if (edge.predicate.toLowerCase() == property) {
-      // console.log(edge);
+      trace(edge);
       properties.add(edge.oid == node.id ? edge.subject : edge.object)
     }
     if (edge.predicate.toLowerCase() == property + " of") {
-      // console.log(edge);
+      trace(edge);
       properties.add(edge.oid == node.id ? edge.subject : edge.object) // of->inverse!
     }
   }
   for (edge of node.statements) {
     if (edge.predicate.toLowerCase().contains(property)) {
-      // console.log(edge);
+      trace(edge);
       properties.add( edge.oid == node.id ? edge.subject : edge.object)
     }
   }
@@ -85,27 +86,28 @@ function getProperties(node, property) {
 
 /*     { id: 2233080, subject: 'Universe', predicate: 'type', object: 'Physical system', sid: 1, pid: -3, oid: 1454986 }, }, */
 function getProperty(node, property) {
-  console.log('getProperty ' + node._name + ":" + property);
-  // console.log(node);
-  // console.log(node.edges);
+  trace('getProperty ' + node._name + ":" + property);
+  trace(node);
+  trace(node.edges);
   property = property.replace("_", " ").toLowerCase()
-  // console.log(node);
+  trace(node);
   if(!node.statements)node.load()
+  if(!node.statements)return 
   for (edge of node.statements) {
     let predicate=edge.predicate.toLowerCase()
     if (predicate == property) {
-      console.log(edge);
+      trace(edge);
       return edge.oid == node.id ? edge.subject : edge.object
     }
     if (predicate == property + " of") {
-      console.log(edge);
+      trace(edge);
       return edge.oid == node.id ? edge.subject : edge.object
       // return edge.oid == node.id ? edge.object : edge.subject // of->inverse!
     }
   }
   for (edge of node.statements) {  
     if (edge.predicate.toLowerCase().contains(property)) {
-      console.log(edge);
+      trace(edge);
       return edge.oid == node.id ? edge.subject : edge.object
     }
   }
@@ -125,28 +127,36 @@ function proxify(object = {}) {
   });
 }
 
-
-function loadJson(id){
+let api0=api
+function loadJson(id,api){
+  if(!api)api=api0
   let file = cache_folder + "/" + lang + "." +id + ".j5"
-  let endpoint = api+id // this.id ? api + this.id : api + String(this._name) + api_limit
+  let endpoint = api+id+ api_limit // this.id ? api + this.id : api + String(this._name) + api_limit
   endpoint=endpoint.replace('/all/','/the/')
-  console.log(endpoint)
+  trace(endpoint)
   // let parse = (result) => {return result.results[0] }
   // let result=fetch(endpoint).then(response=>response.json().then(parse))
   try {
-    results = JSON.parse(read(file))
+    old=read(file)
+    results = JSON5.parse(old)
   } catch (x) {
+	  let json;
     try{
-        if (exists(file)) console.log(x);
-        let json=wget(endpoint).body //string(
-        save_json5(file,json)
-        results = JSON5.parse(json)
-    }catch(ex){console.error("can't cache "+file+" : "+ex.message);save_json5(file,json)}
+      if (exists(file)) console.error("can't load cache "+file+" "+ex.message);
+      json=wget(endpoint.replace(/ /g,'+')).body.toString('utf8') //string(
+      if(json[0]=="<")return null;// "{results:'ERROR',message:'"+json+"'}"
+      results = JSON5.parse(json)
+      save_json5(file,results)
+    }catch(ex){
+      console.log(json)
+      console.error("can't cache "+file+" : "+ex.message);
+      // if(json)save_json5(file,json)
+    }
   }
   if(results.results) return results.results[0]
-  // console.log(results.keys)
-  // console.log(dir(results))
-  console.log(results[0])
+  trace(results.keys)
+  trace(dir(results))
+  trace(results[0])
   throw "NO results"
 }
 
@@ -184,7 +194,7 @@ class Node {
 
   get predicates() { return this.statements.map(x => x.predicate).unique() }
   get edges() {
-    console.log("edges");
+    trace("edges");
     if (!this._edges) this.load()
     // this._edges=new Edges(this.load());
     return this._edges
@@ -213,8 +223,26 @@ function proxy(id) {
   return proxy
 }
 
-module.exports = exports = {getThe:getThe, get:getThe,setGerman:setGerman,setEnglish:setEnglish,setDebug:setDebug,has:loadJson}
+function importe(what) {
+}
+function query(what) {
+	return loadJson(what)
+}
+function summary(query) {
+	return loadJson(query,api.replace('/all/','/short/'))
+}
+trace("DEBUGG!!!")
+// setGerman()
+// brd=getThe("Deutschland").load()
 
-console.log("DEBUGGG!!!")
-setGerman()
-brd=getThe("Deutschland").load()
+module.exports = exports = {
+  getThe, get:getThe,
+  setGerman,
+  setEnglish,
+  setDebug,
+  setTest,
+	query,
+  summary,
+	import:importe,
+  has:loadJson
+}
