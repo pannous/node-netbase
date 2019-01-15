@@ -4,3 +4,4 @@ page.link.sh
 .cache/*.j5
 *.j5
 .idea/
+.vscode/
